@@ -1,3 +1,4 @@
+from .scenes import SceneManager
 import pygame
 from typing import List, Optional, Tuple, Callable
 from decorator import decorator
@@ -71,8 +72,9 @@ def handle_events(handlers):
             running = False
 
 
-def loop(game_objects: List, screen: pygame.Surface, fps=60):
+def loop(scene_manager: SceneManager, screen: pygame.Surface, fps=60):
     clock = pygame.time.Clock()
+    game_objects = scene_manager.get_game_objects()
     event_handlers = get_event_handlers(game_objects)
     running = True
     while running:
@@ -84,8 +86,8 @@ def loop(game_objects: List, screen: pygame.Surface, fps=60):
 
         handle_events(event_handlers)
 
-        for obj in game_objects:
-            obj.render(screen)
+        scene_manager.update()
+        scene_manager.render(screen)
 
         pygame.display.flip()
         pygame.display.update()
