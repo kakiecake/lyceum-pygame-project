@@ -4,6 +4,9 @@ from typing import Dict, List
 class Scene:
     scene_data = {}
 
+    def show(self):
+        pass
+
 
 class SceneManager:
     def __init__(self, scenes: Dict[str, Scene] = {}, data={}):
@@ -19,6 +22,7 @@ class SceneManager:
 
     def switch_to(self, scene_name: str):
         self.current_scene = self.scenes.get(scene_name)
+        self.current_scene.show()
 
     def get_game_objects(self) -> List:
         return list(self.scenes.values())
