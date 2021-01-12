@@ -22,12 +22,14 @@ if __name__ == '__main__':
     scene_manager = SceneManager()
     menu = Menu(go_to_leaderboard=lambda: scene_manager.switch_to('leaderboard'),
                 go_to_level=lambda: scene_manager.switch_to('board'),
-                go_to_registration=lambda: scene_manager.switch_to('registration'),
+                go_to_registration=lambda: scene_manager.switch_to(
+                    'registration'),
                 go_to_designer=lambda: scene_manager.switch_to('designer'))
     leaderboard = Leaderboard()
     board = Board(size)
     designer = Designer()
-    register_scene = RegisterScene(user_storage)
+    register_scene = RegisterScene(
+        user_storage, switch_to_menu=lambda: scene_manager.switch_to('menu'))
 
     scene_manager.add_scene('board', board)
     scene_manager.add_scene('menu', menu)

@@ -1,9 +1,9 @@
 import pygame
 from pygame import Rect
-from framework import Button, loop, event_handler
+from framework import Button, loop, event_handler, Scene
 
 
-class Menu:
+class Menu(Scene):
     def __init__(self,
                  go_to_level=lambda: None,
                  go_to_leaderboard=lambda: None,

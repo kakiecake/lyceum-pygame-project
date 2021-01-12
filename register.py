@@ -1,15 +1,17 @@
-from framework import TextEdit, Button, event_handler
+from framework import TextEdit, Button, event_handler, Scene
 from pygame import Rect, KEYDOWN, MOUSEBUTTONDOWN
 from user_storage import UserStorage
 import pygame
 
 
-class RegisterScene:
+class RegisterScene(Scene):
     font_color = (0, 0, 0)
 
-    def __init__(self, user_storage: UserStorage):
+    def __init__(self, user_storage: UserStorage, switch_to_menu=lambda data: None):
         self.font = pygame.font.Font(None, 24)
         self.user_storage = user_storage
+        self.switch_to_menu = switch_to_menu
+
         self.login_edit = TextEdit(Rect(100, 100, 200, 50))
         self.password_edit = TextEdit(Rect(100, 170, 200, 50))
         self.login_button = Button(
@@ -20,7 +22,14 @@ class RegisterScene:
             Rect(100, 300, 200, 40),
             on_click=self.on_register_button_click,
             text="Регистрация")
+        self.go_back_button = Button(
+            Rect(100, 350, 200, 40),
+            on_click=self.on_back_button_click,
+            text="В меню")
+
         self.error_message = ""
+        self.is_user_logged_in = False
+        self.username = None
 
     @event_handler(KEYDOWN, use_event=True)
     def on_keydown(self, event):
@@ -33,6 +42,7 @@ class RegisterScene:
         self.password_edit.handle_click(event)
         self.register_button.handle_click(event)
         self.login_button.handle_click(event)
+        self.go_back_button.handle_click(event)
 
     def validate_login(self, login: str) -> bool:
         if login == '':
@@ -58,6 +68,8 @@ class RegisterScene:
         success = self.user_storage.login_user(login, password)
         self.error_message = "Пользователь успешно вошел" \
             if success else "Комбинация логин/пароль неверна"
+        self.is_user_logged_in = True
+        self.username = login
 
     def on_register_button_click(self):
         login = self.login_edit.text
@@ -68,6 +80,13 @@ class RegisterScene:
         self.error_message = "Регистрация прошла успешно" \
             if success else "Ошибка регистрации"
 
+    def on_back_button_click(self):
+        self.scene_data.update({
+            "is_user_logged_in": self.is_user_logged_in,
+            "username": self.username
+        })
+        self.switch_to_menu()
+
     def update(self):
         pass
 
@@ -76,6 +95,7 @@ class RegisterScene:
         self.password_edit.render(screen)
         self.login_button.render(screen)
         self.register_button.render(screen)
+        self.go_back_button.render(screen)
 
         text = self.font.render(self.error_message, True, self.font_color)
         screen.blit(text, (60, 50))
