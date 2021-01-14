@@ -2,13 +2,19 @@ from typing import Dict, List
 
 
 class Scene:
+    """Класс, от которого должны наследоваться все сцены"""
+
+    # используется для хранения и передачи данных между сценами
     scene_data = {}
 
     def show(self):
+        """Функция, вызываемая каждый раз при переключении на сцену"""
         pass
 
 
 class SceneManager:
+    """Класс, отвечающий за работу с несколькими сценами"""
+
     def __init__(self, scenes: Dict[str, Scene] = {}, data={}):
         self.current_scene = None
         self.scenes = scenes

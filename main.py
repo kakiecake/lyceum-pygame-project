@@ -32,7 +32,8 @@ if __name__ == '__main__':
     designer = Designer(switch_to_menu=lambda: scene_manager.switch_to('menu'))
     register_scene = RegisterScene(
         user_storage, switch_to_menu=lambda: scene_manager.switch_to('menu'))
-    customization_scene = Customization(switch_to_menu=lambda: scene_manager.switch_to('menu'))
+    customization_scene = Customization(
+        switch_to_menu=lambda: scene_manager.switch_to('menu'))
 
     scene_manager.add_scene('board', board)
     scene_manager.add_scene('menu', menu)

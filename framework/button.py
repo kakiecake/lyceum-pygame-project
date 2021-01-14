@@ -3,6 +3,8 @@ import pygame
 
 
 class Button(pygame.sprite.Sprite):
+    """Класс, представляющий из себя простую кнопку"""
+
     def __init__(self, rect, on_click: Callable,
                  color=(255, 0, 0), font_color=(255, 255, 255),
                  text="", font=None):
@@ -15,6 +17,7 @@ class Button(pygame.sprite.Sprite):
         self.font = font or pygame.font.Font(None, 36)
 
     def handle_click(self, clicked_event):
+        """Обработка событий мыши, функция обязательно должна быть вызвана при каждом клике"""
         pos = clicked_event.pos
         if self.rect.collidepoint(pos):
             self.on_click()

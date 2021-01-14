@@ -2,7 +2,12 @@ import pygame
 
 
 class TextEdit:
-    def __init__(self, rect: pygame.Rect, on_submit=lambda text: None, text="", color=(0, 0, 0), padding=5):
+    """Класс, представляющий из себя поле для ввода текста"""
+
+    def __init__(self, rect: pygame.Rect,
+                 on_submit=lambda text: None,
+                 text="", color=(0, 0, 0),
+                 padding=5):
         self.rect = rect
         self.active = False
         self.text = text
@@ -11,12 +16,14 @@ class TextEdit:
         self.padding = padding
 
     def handle_click(self, clicked_event):
+        """Обработка событий мыши, функция обязательно должна быть вызвана при каждом клике"""
         if self.rect.collidepoint(clicked_event.pos):
             self.active = True
         else:
             self.active = False
 
     def handle_keydown(self, keydown_event):
+        """Обработка событий клавиатуры, функция обязательно должна быть вызвана при каждом клике"""
         if not self.active:
             return
         if keydown_event.key == pygame.K_ESCAPE:
@@ -33,6 +40,8 @@ class TextEdit:
         x_offset = text_width - self.rect.width if text_width > self.rect.width else 0
         position = (self.rect.x + self.padding - x_offset,
                     self.rect.y + self.rect.height // 2 - text_height // 2)
+
+        # set_clip нужна для правильной отрисовки текста внутри прямоугольника
         screen.set_clip(self.rect)
         screen.blit(text, position)
         screen.set_clip(None)
