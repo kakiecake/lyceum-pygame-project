@@ -12,65 +12,73 @@ class Board(Scene):
         self.height = height
         self.switch_to_menu = switch_to_menu
 
+    def create_new_ball(self):
+        self.ball = Ball((random.randint(0, 930), 450),
+                         self.scene_data["difficulty"])
+        self.balls_group.add(self.ball)
+
     def update(self):
-        if self.end_game is False:
+        if self.end_game:
+            self.gameover.sprite.update()
+        else:
             pygame.mouse.set_visible(False)
+
             self.ball.update()
-            for brick in self.bricks:
-                self.bricks_group.remove(brick)
+
+            for brick in self.bricks_group:
                 brick.update()
-                if pygame.sprite.spritecollideany(brick, self.bricks_group) or \
-                        pygame.sprite.spritecollideany(brick, self.vertical_barriers):
+                collided_bricks = pygame.sprite.spritecollide(
+                    brick, self.bricks_group, False)
+                if len(collided_bricks) > 1 or \
+                        pygame.sprite.spritecollideany(brick,
+                                                       self.vertical_barriers):
                     brick.on_brick_collision()
-                self.bricks_group.add(brick)
+
             if pygame.sprite.spritecollideany(self.ball, self.dead_barriers):
                 self.ball.die()
-                for heart in self.hearts_group:
-                    heart.kill()
-                    break
+                self.hearts_group.sprites()[0].kill()
                 if self.life < 1:
                     self.life = -1
                     self.end()
                 else:
                     self.life -= 1
-                    self.ball = Ball((random.randint(0, 930), 450), self.scene_data["difficulty"])
-                    self.balls_group.add(self.ball)
+                    self.create_new_ball()
+
             if len(self.bricks_group.sprites()) == 0:
                 self.end()
-            if pygame.sprite.spritecollideany(self.ball, self.horizontal_barriers):
+
+            if pygame.sprite.spritecollideany(self.ball,
+                                              self.horizontal_barrier):
                 self.ball.on_horizontal_collision()
-            if pygame.sprite.spritecollideany(self.ball, self.vertical_barriers):
+            if pygame.sprite.spritecollideany(self.ball,
+                                              self.vertical_barriers):
                 self.ball.on_vertical_collision()
+
             for brick in self.bricks_group:
-                if pygame.sprite.spritecollideany(brick, self.balls_group):
-                    for i in range(len(self.bricks)):
-                        if self.bricks[i] == brick:
-                            if self.bricks[i].life == 1:
-                                self.bricks[i].life = 0
-                                self.bricks[i].breaking()
-                            else:
-                                del self.bricks[i]
-                            break
-                    pygame.sprite.spritecollide(self.ball, self.bricks_group, True)
+                if pygame.sprite.collide_rect(brick, self.ball):
+                    if brick.life == 1:
+                        brick.life = 0
+                        brick.breaking()
+                    else:
+                        brick.kill()
                     self.ball.on_brick_collision(brick)
-            for platform1 in self.platforms_group:
-                if pygame.sprite.spritecollideany(platform1, self.balls_group):
-                    self.ball.on_brick_collision(platform1)
-        else:
-            self.gameover.update()
+
+            if pygame.sprite.spritecollideany(self.platform.sprite,
+                                              self.balls_group):
+                self.ball.on_brick_collision(self.platform.sprite)
 
     def render(self, screen):
         self.balls_group.draw(screen)
         self.bricks_group.draw(screen)
-        self.platforms_group.draw(screen)
-        self.gameover_group.draw(screen)
+        self.platform.draw(screen)
+        self.gameover.draw(screen)
         self.hearts_group.draw(screen)
         if self.end_score is not None:
             self.end_score.render(screen)
 
     @event_handler(pygame.MOUSEMOTION, use_event=True)
     def on_move_mouse(self, event):
-        self.platform.move(event.pos)
+        self.platform.sprite.move(event.pos)
 
     @event_handler(pygame.KEYDOWN)
     def press_any_key_to_leave(self):
@@ -82,36 +90,40 @@ class Board(Scene):
     def end(self):
         self.end_game = True
         self.score += (1000 * (self.life + 1))
-        self.score += ((self.number_of_bricks - len(self.bricks_group.sprites())) * 100)
+        self.score += ((self.number_of_bricks -
+                        len(self.bricks_group.sprites())) * 100)
         self.end_score = Score(self.score)
 
     def show(self):
+        self.platform = pygame.sprite.GroupSingle(
+            Platform((400, 470), self.width,
+                     index=self.scene_data.get('platform_index', 0)))
         self.balls_group = pygame.sprite.Group()
         self.bricks_group = pygame.sprite.Group()
-        self.platforms_group = pygame.sprite.Group()
-        self.horizontal_barriers = pygame.sprite.Group()
-        self.vertical_barriers = pygame.sprite.Group()
         self.dead_barriers = pygame.sprite.Group()
-        self.gameover_group = pygame.sprite.Group()
-        self.hearts_group = pygame.sprite.Group()
-        self.hearts_group.add(Heart((55, 5)))
-        self.hearts_group.add(Heart((30, 5)))
-        self.hearts_group.add(Heart((5, 5)))
-        self.gameover = GameOver()
-        self.gameover_group.add(self.gameover)
-        self.horizontal_barriers.add(Barrier(0, 0, self.width, 0))
-        self.dead_barriers.add(Barrier(0, self.height - 20, self.width, self.height - 20))
-        self.vertical_barriers.add(Barrier(0, 0, 0, self.height))
-        self.vertical_barriers.add(Barrier(self.width, 0, self.width, self.height))
-        self.ball = Ball((random.randint(0, 930), 450), self.scene_data["difficulty"])
-        self.balls_group.add(self.ball)
-        self.platform = Platform((400, 470), self.width, index=self.scene_data.get('platform_index', 0))
-        self.platforms_group.add(self.platform)
-        self.bricks = []
-        self.make_bricks(self.scene_data.get("bricks", [[[5 + 105 * i, 5 + 35 * j]]
-                                                        for i in range(9)
-                                                        for j in range(2)]))
-        self.bricks_group.add(*self.bricks)
+        self.hearts_group = pygame.sprite.Group(
+            Heart((55, 5)), Heart((30, 5)), Heart((5, 5)))
+        self.gameover = pygame.sprite.GroupSingle(GameOver())
+        self.dead_barriers.add(
+            Barrier(0, self.height - 20, self.width, self.height - 20))
+
+        self.vertical_barriers = pygame.sprite.Group(
+            Barrier(0, 0, 0, self.height),
+            Barrier(self.width, 0, self.width, self.height))
+
+        self.horizontal_barrier = pygame.sprite.GroupSingle(
+            Barrier(0, 0, self.width, 0))
+
+        self.create_new_ball()
+
+        default_brick_positions = [(5 + 105 * i, 5 + 35 * j, False)
+                                   for i in range(9)
+                                   for j in range(2)]
+        brick_positions = self.scene_data.get(
+            "bricks", default_brick_positions)
+
+        self.make_bricks(brick_positions)
+
         self.number_of_bricks = len(self.bricks_group.sprites())
         self.life = 2
         self.end_game = False
@@ -119,11 +131,10 @@ class Board(Scene):
         self.end_score = None
 
     def make_bricks(self, bricks):
-        for i in bricks:
-            if len(i) == 2:
-                self.bricks.append(Brick(i[0], moving=i[1], index=self.scene_data.get('brick_index', 0)))
-            else:
-                self.bricks.append(Brick(i[0], index=self.scene_data.get('brick_index', 0)))
+        for brick_position in bricks:
+            self.bricks_group.add(
+                Brick(*brick_position,
+                      sprite_index=self.scene_data.get('brick_index', 0)))
 
 
 class Ball(pygame.sprite.Sprite):
@@ -168,18 +179,19 @@ class Ball(pygame.sprite.Sprite):
 
 
 class Brick(pygame.sprite.Sprite):
-    def __init__(self, pos, moving=False, index=0):
+    def __init__(self, x, y, moving, sprite_index=0):
         super().__init__()
         if moving is True:
-            self.image = load_image('brick_moving' + str(index) + '.png')
+            self.image = load_image(
+                f'brick_moving{str(sprite_index)}.png')
         else:
-            self.image = load_image('brick' + str(index) + '.png')
+            self.image = load_image(f'brick{str(sprite_index)}.png')
         self.rect = self.image.get_rect()
-        self.rect.x = pos[0]
-        self.rect.y = pos[1]
+        self.rect.x = x
+        self.rect.y = y
         self.vx = 1
         self.moving = moving
-        self.index = index
+        self.index = sprite_index
         self.life = 1
 
     def update(self):
@@ -195,9 +207,10 @@ class Brick(pygame.sprite.Sprite):
 
     def breaking(self):
         if self.moving is True:
-            self.image = load_image('broken_brick_moving' + str(self.index) + '.png')
+            self.image = load_image(
+                f'broken_brick_moving{str(self.index)}.png')
         else:
-            self.image = load_image('broken_brick' + str(self.index) + '.png')
+            self.image = load_image(f'broken_brick{str(self.index)}.png')
 
 
 class Platform(pygame.sprite.Sprite):

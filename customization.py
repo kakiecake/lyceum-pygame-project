@@ -6,17 +6,23 @@ from load_image import load_image
 class Customization(Scene):
     def __init__(self, switch_to_menu=lambda data: None):
         self.bricks_group = pygame.sprite.Group()
-        self.platforms_group = pygame.sprite.Group()
-        self.stars_group = pygame.sprite.Group()
-        self.button = Button(pygame.Rect(400, 450, 150, 50), self.save, text='Сохранить')
-        self.bricks_group.add(*[Brick((25 + 187 * i, 25), number=i) for i in range(4)])
-        self.bricks_group.add(*[Brick((25 + 187 * i, 55), moving=True, number=i) for i in range(4)])
-        self.platforms_group.add(*[Platform((25 + 374 * i, 250), number=i) for i in range(2)])
-        self.star1 = Star((130, 25))
-        self.star2 = Star((180, 229))
-        self.stars_group.add(self.star1, self.star2)
-        self.bricks = [[(25, 25), (25, 55)], [(212, 25), (212, 55)], [(399, 25), (399, 55)], [(586, 25), (586, 55)]]
-        self.platforms = [(25, 250), (399, 250)]
+        self.bricks_group.add(
+            *[Brick((25 + 187 * i, 25), number=i) for i in range(4)])
+        self.bricks_group.add(
+            *[Brick((25 + 187 * i, 55), moving=True, number=i)
+              for i in range(4)])
+
+        self.platforms_group = pygame.sprite.Group(
+            *[Platform((25 + 374 * i, 250), number=i) for i in range(2)])
+
+        self.button = Button(pygame.Rect(400, 450, 150, 50),
+                             self.save, text='Сохранить')
+
+        self.brick_star = Star((130, 25))
+        self.platform_star = Star((180, 229))
+        self.stars_group = pygame.sprite.Group(
+            self.brick_star, self.platform_star)
+
         self.brick = 0
         self.platform = 0
         self.switch_to_menu = switch_to_menu
@@ -33,34 +39,20 @@ class Customization(Scene):
     @event_handler(pygame.MOUSEBUTTONDOWN, use_event=True)
     def mouse_click(self, event):
         self.button.handle_click(event)
-        leave = False
-        for brick in self.bricks_group:
+
+        for i, brick in enumerate(self.bricks_group):
             if brick.rect.collidepoint(event.pos):
-                for i in range(len(self.bricks)):
-                    for j in self.bricks[i]:
-                        if brick.rect.x == j[0] and brick.rect.y == j[1]:
-                            self.brick = i
-                            self.star1.rect.x = brick.rect.x + 105
-                            leave = True
-                            break
-                    if leave is True:
-                        break
-            if leave is True:
-                break
-        leave = False
-        for platform in self.platforms_group:
+                self.brick_star.rect.x = brick.rect.x + 105
+                self.brick = i // 2
+
+        for i, platform in enumerate(self.platforms_group):
             if platform.rect.collidepoint(event.pos):
-                for i in range(len(self.platforms)):
-                    if platform.rect.x == self.platforms[i][0] and platform.rect.y == self.platforms[i][1]:
-                        self.platform = i
-                        self.star2.rect.x = platform.rect.x + 155
-                        leave = True
-                        break
-                if leave is True:
-                    break
+                self.platform_star.rect.x = platform.rect.x + 155
+                self.platform = i // 2
 
     def save(self):
-        self.scene_data.update({"brick_index": self.brick, "platform_index": self.platform})
+        self.scene_data.update(
+            {"brick_index": self.brick, "platform_index": self.platform})
         self.switch_to_menu()
 
 

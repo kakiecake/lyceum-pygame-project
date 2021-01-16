@@ -4,9 +4,12 @@ from framework import event_handler, Scene, Button
 
 class Difficulty(Scene):
     def __init__(self, switch_to_menu=lambda data: None):
-        self.hard = Button(pygame.Rect(650, 200, 250, 100), lambda: self.start(-10), text='Сложный')
-        self.medium = Button(pygame.Rect(350, 200, 250, 100), lambda: self.start(-6), text='Средний')
-        self.easy = Button(pygame.Rect(50, 200, 250, 100), lambda: self.start(-3), text='Лёгкий')
+        self.hard = Button(pygame.Rect(650, 200, 250, 100),
+                           lambda: self.start(-10), text='Сложный')
+        self.medium = Button(pygame.Rect(350, 200, 250, 100),
+                             lambda: self.start(-6), text='Средний')
+        self.easy = Button(pygame.Rect(50, 200, 250, 100),
+                           lambda: self.start(-3), text='Лёгкий')
         self.switch_to_menu = switch_to_menu
 
     def update(self):

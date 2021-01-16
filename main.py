@@ -1,7 +1,7 @@
 from menu import Menu
 from leaderboard import Leaderboard
 from framework import SceneManager, loop
-from classes import Board
+from board import Board
 from designer import Designer
 from customization import Customization
 from level_of_difficulty import Difficulty
