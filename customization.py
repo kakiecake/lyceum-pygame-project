@@ -1,5 +1,5 @@
 import pygame
-from framework import event_handler, Scene
+from framework import event_handler, Scene, Button
 from load_image import load_image
 
 
@@ -8,7 +8,7 @@ class Customization(Scene):
         self.bricks_group = pygame.sprite.Group()
         self.platforms_group = pygame.sprite.Group()
         self.stars_group = pygame.sprite.Group()
-        self.button = Button()
+        self.button = Button(pygame.Rect(400, 450, 150, 50), self.save, text='Сохранить')
         self.bricks_group.add(*[Brick((25 + 187 * i, 25), number=i) for i in range(4)])
         self.bricks_group.add(*[Brick((25 + 187 * i, 55), moving=True, number=i) for i in range(4)])
         self.platforms_group.add(*[Platform((25 + 374 * i, 250), number=i) for i in range(2)])
@@ -32,6 +32,7 @@ class Customization(Scene):
 
     @event_handler(pygame.MOUSEBUTTONDOWN, use_event=True)
     def mouse_click(self, event):
+        self.button.handle_click(event)
         leave = False
         for brick in self.bricks_group:
             if brick.rect.collidepoint(event.pos):
@@ -57,8 +58,6 @@ class Customization(Scene):
                         break
                 if leave is True:
                     break
-        if self.button.rect.collidepoint(event.pos):
-            self.save()
 
     def save(self):
         self.scene_data.update({"brick_index": self.brick, "platform_index": self.platform})
@@ -93,22 +92,3 @@ class Star(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = pos[0]
         self.rect.y = pos[1]
-
-
-class Button(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        self.rect = pygame.Rect(400, 450, 150, 50)
-        self.color = (255, 0, 0)
-        self.font_color = (255, 255, 255)
-        self.text = 'Сохранить'
-        self.font = pygame.font.Font(None, 42)
-
-    def render(self, screen):
-        pygame.draw.rect(screen, self.color, self.rect)
-        text = self.font.render(self.text, True, self.font_color)
-        middle_x = self.rect.x + self.rect.width // 2
-        middle_y = self.rect.y + self.rect.height // 2
-        position = (middle_x - text.get_width() // 2,
-                    middle_y - text.get_height() // 2)
-        screen.blit(text, position)
