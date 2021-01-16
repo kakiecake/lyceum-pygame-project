@@ -7,6 +7,7 @@ from customization import Customization
 from level_of_difficulty import Difficulty
 from register import RegisterScene
 from user_storage import UserStorage
+from leaderboard_storage import LeaderboardStorage
 import pygame
 import sqlite3
 from pathlib import Path
@@ -16,6 +17,7 @@ DATABASE_PATH = Path('./db.sqlite')
 if __name__ == '__main__':
     connection = sqlite3.connect(DATABASE_PATH)
     user_storage = UserStorage(connection)
+    leaderboard_storage = LeaderboardStorage(connection)
 
     pygame.init()
     pygame.font.init()
@@ -28,13 +30,14 @@ if __name__ == '__main__':
                     'registration'),
                 go_to_designer=lambda: scene_manager.switch_to('designer'),
                 go_to_customization=lambda: scene_manager.switch_to('customization'))
-    leaderboard = Leaderboard()
+    leaderboard = Leaderboard(leaderboard_storage)
     board = Board(size, switch_to_menu=lambda: scene_manager.switch_to('menu'))
     designer = Designer(switch_to_menu=lambda: scene_manager.switch_to('menu'))
     register_scene = RegisterScene(
         user_storage, switch_to_menu=lambda: scene_manager.switch_to('menu'))
-    customization_scene = Customization(switch_to_menu=lambda: scene_manager.switch_to('menu'))
     difficulty_scene = Difficulty(switch_to_menu=lambda: scene_manager.switch_to('board'))
+    customization_scene = Customization(
+        switch_to_menu=lambda: scene_manager.switch_to('menu'))
 
     scene_manager.add_scene('board', board)
     scene_manager.add_scene('menu', menu)

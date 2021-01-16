@@ -8,6 +8,7 @@ from dataclasses import dataclass
 
 @dataclass
 class EventMetadata:
+    """Метаданные обработчиков событий"""
     type: int
     required_fields: dict
     use_event: bool
@@ -18,6 +19,21 @@ def is_primitive_type(value) -> bool:
 
 
 def event_handler(event_type: int, use_event=False, **event_data):
+    """
+        Декоратор, используемый для создания обработчиков событий.
+        Аргументы:
+            event_type: int - тип события
+            use_event: bool - если True, то событие будет передано 
+                обработчику в качестве аргумента
+            **event_data - значения, которые должен иметь объект события
+        Пример:
+            @event_handler(pygame.KEYDOWN, key=pygame.K_ENTER)
+            def on_enter(self):
+                ...
+            В данном случае обработчик будет вызван каждый раз, 
+            когда просходит событие pygame.KEYDOWN с полем key 
+            равным pygame.K_ENTER
+    """
     def decorator(handler):
         metadata = EventMetadata(
             type=event_type,
@@ -80,6 +96,13 @@ def handle_events(scene):
 
 
 def loop(scene_manager: SceneManager, screen: pygame.Surface, fps=60):
+    """
+        Главный цикл приложения.
+        Аргументы:
+            scene_manager - менеджер сцен отвечающий за работу с ними
+            screen - экран, на котором будет рисоваться изображение
+            fps - частота обновления экрана
+    """
     clock = pygame.time.Clock()
     game_objects = scene_manager.get_game_objects()
     get_event_handlers(game_objects)
@@ -99,10 +122,3 @@ def loop(scene_manager: SceneManager, screen: pygame.Surface, fps=60):
         pygame.display.flip()
         pygame.display.update()
         clock.tick(fps)
-
-
-def main(game_objects: List):
-    pygame.init()
-    size = width, height = 500, 500
-    screen = pygame.display.set_mode(size)
-    loop(game_objects, screen)
