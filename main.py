@@ -31,7 +31,8 @@ if __name__ == '__main__':
                 go_to_designer=lambda: scene_manager.switch_to('designer'),
                 go_to_customization=lambda: scene_manager.switch_to('customization'))
     leaderboard = Leaderboard(leaderboard_storage)
-    board = Board(size, switch_to_menu=lambda: scene_manager.switch_to('menu'))
+    board = Board(size, switch_to_menu=lambda: scene_manager.switch_to('menu'),
+                  leaderboard_storage=leaderboard_storage)
     designer = Designer(switch_to_menu=lambda: scene_manager.switch_to('menu'))
     register_scene = RegisterScene(
         user_storage, switch_to_menu=lambda: scene_manager.switch_to('menu'))

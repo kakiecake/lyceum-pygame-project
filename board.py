@@ -6,11 +6,12 @@ from framework import Scene
 
 
 class Board(Scene):
-    def __init__(self, size, switch_to_menu):
+    def __init__(self, size, switch_to_menu, leaderboard_storage):
         width, height = size
         self.width = width
         self.height = height
         self.switch_to_menu = switch_to_menu
+        self.leaderboard_storage = leaderboard_storage
 
     def create_new_ball(self):
         self.ball = Ball((random.randint(0, 930), 450),
@@ -84,7 +85,10 @@ class Board(Scene):
     def press_any_key_to_leave(self):
         if self.end_score is not None:
             pygame.mouse.set_visible(True)
-            self.scene_data.update({"score": self.score})
+            username = self.scene_data.get('username')
+            if username:
+                self.leaderboard_storage.add_new_score(username,
+                                                       self.score, 'default')
             self.switch_to_menu()
 
     def end(self):

@@ -7,7 +7,7 @@ class Leaderboard(Scene):
     def __init__(self, leaderboard_storage: LeaderboardStorage):
         self.font = pygame.font.Font(None, 40)
         self.storage = leaderboard_storage
-        self.level = 'level1'
+        self.level = 'default'
         self.should_view_all = True
         self.switch_view_button = Button(
             pygame.Rect(650, 400, 280, 70),
@@ -47,3 +47,6 @@ class Leaderboard(Scene):
             screen.blit(rendered_text, position)
 
         self.switch_view_button.render(screen)
+
+    def show(self):
+        self.get_scores()
