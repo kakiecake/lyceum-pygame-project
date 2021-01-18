@@ -105,7 +105,7 @@ class Board(Scene):
             Heart((55, 5)), Heart((30, 5)), Heart((5, 5)))
         self.gameover = pygame.sprite.GroupSingle(GameOver())
         self.dead_barriers.add(
-            Barrier(0, self.height - 20, self.width, self.height - 20))
+            Barrier(0, self.height - 15, self.width, self.height - 15))
 
         self.vertical_barriers = pygame.sprite.Group(
             Barrier(0, 0, 0, self.height),
@@ -144,10 +144,8 @@ class Ball(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = pos[0]
         self.rect.y = pos[1]
-        self.vx = random.randint(-5, 5)
+        self.vx = random.choice((difficulty, -difficulty))
         self.vy = difficulty
-        while self.vx == 0:
-            self.vx = random.randint(-5, 5)
 
     def update(self):
         self.rect = self.rect.move(self.vx, self.vy)
@@ -165,10 +163,15 @@ class Ball(pygame.sprite.Sprite):
             self.vx, self.vy = -self.vx, -self.vy
         elif x > y:
             self.vy = -self.vy
+            self.vx += random.randint(-4, 4)
         elif y > x:
             self.vx = -self.vx
 
     def on_vertical_collision(self):
+        if self.rect.x < 0:
+            self.rect.x = 0
+        elif self.rect.x > 950:
+            self.rect.x = 930
         self.vx = -self.vx
 
     def on_horizontal_collision(self):
