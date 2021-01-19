@@ -1,8 +1,7 @@
 import pygame
 import random
-from framework import event_handler
+from framework import event_handler, Scene
 from load_image import load_image
-from framework import Scene
 
 
 class Board(Scene):
@@ -12,6 +11,10 @@ class Board(Scene):
         self.height = height
         self.switch_to_menu = switch_to_menu
         self.leaderboard_storage = leaderboard_storage
+        self.sound_brick = pygame.mixer.Sound('data/sound_brick.mp3')
+        self.win = pygame.mixer.Sound('data/win.mp3')
+        self.defeat = pygame.mixer.Sound('data/defeat.mp3')
+        self.heart_sound = pygame.mixer.Sound('data/heart.mp3')
 
     def create_new_ball(self):
         self.ball = Ball((random.randint(0, 930), 450),
@@ -36,16 +39,20 @@ class Board(Scene):
                     brick.on_brick_collision()
 
             if pygame.sprite.spritecollideany(self.ball, self.dead_barriers):
+                self.heart_sound.play()
                 self.ball.die()
                 self.hearts_group.sprites()[0].kill()
                 if self.life < 1:
                     self.life = -1
+                    self.defeat.play()
+                    self.gameover.sprite.defeat()
                     self.end()
                 else:
                     self.life -= 1
                     self.create_new_ball()
 
             if len(self.bricks_group.sprites()) == 0:
+                self.win.play()
                 self.end()
 
             if pygame.sprite.spritecollideany(self.ball,
@@ -57,6 +64,7 @@ class Board(Scene):
 
             for brick in self.bricks_group:
                 if pygame.sprite.collide_rect(brick, self.ball):
+                    self.sound_brick.play()
                     if brick.life == 1:
                         brick.life = 0
                         brick.breaking()
@@ -253,13 +261,16 @@ class Barrier(pygame.sprite.Sprite):
 class GameOver(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = load_image("gameover.png")
+        self.image = load_image("win.png")
         self.rect = self.image.get_rect()
         self.rect.x = -950
 
     def update(self):
         if self.rect.x < 0:
             self.rect.x += 5
+
+    def defeat(self):
+        self.image = load_image("defeat.png")
 
 
 class Heart(pygame.sprite.Sprite):

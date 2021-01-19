@@ -19,19 +19,18 @@ class Designer(Scene):
     @event_handler(pygame.MOUSEBUTTONDOWN, button=1, use_event=True)
     def left_mouse_button_click(self, event):
         self.button.handle_click(event)
-        brick = Brick(event.pos)
-        self.create_brick_if_not_collide(brick, event.pos, False)
+        brick = Brick(event.pos, moving=False)
+        self.create_brick_if_not_collide(brick, event.pos)
 
     @event_handler(pygame.MOUSEBUTTONDOWN, button=2, use_event=True)
     def middle_mouse_button_click(self, event):
         brick = Brick(event.pos, moving=True)
-        self.create_brick_if_not_collide(brick, event.pos, True)
+        self.create_brick_if_not_collide(brick, event.pos)
 
-    def create_brick_if_not_collide(self, brick, pos, moving):
+    def create_brick_if_not_collide(self, brick, pos):
         if not(pygame.sprite.spritecollideany(brick, self.bricks_group)) and \
                 pos[0] < 850 and \
                 pos[1] < 470:
-            self.bricks.append((*pos, moving))
             self.bricks_group.add(brick)
 
     @event_handler(pygame.MOUSEBUTTONDOWN, button=3, use_event=True)
@@ -41,12 +40,11 @@ class Designer(Scene):
                 brick.kill()
 
     def save(self):
-        self.scene_data.update({"bricks": self.bricks})
+        self.scene_data.update({"bricks": [brick.get_data() for brick in self.bricks_group]})
         self.switch_to_menu()
 
     def show(self):
         self.bricks_group = pygame.sprite.Group()
-        self.bricks = []
 
 
 class Brick(pygame.sprite.Sprite):
@@ -59,3 +57,7 @@ class Brick(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = pos[0]
         self.rect.y = pos[1]
+        self.is_moving = moving
+
+    def get_data(self):
+        return self.rect.x, self.rect.y, self.is_moving
