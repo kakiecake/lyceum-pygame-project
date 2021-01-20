@@ -30,7 +30,8 @@ class TextEdit:
             self.active = False
         elif keydown_event.key == pygame.K_BACKSPACE:
             self.text = self.text[:-1]
-        self.text += keydown_event.unicode
+        else:
+            self.text += keydown_event.unicode
 
     def render(self, screen):
         pygame.draw.rect(screen, self.color, self.rect, width=2)
