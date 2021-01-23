@@ -38,21 +38,26 @@ class Customization(Scene):
 
     @event_handler(pygame.MOUSEBUTTONDOWN, use_event=True)
     def mouse_click(self, event):
+        # Проверка на нажатие кнопки сохранения
         self.button.handle_click(event)
-
+        # Проверяем было ли нажатие по кирпичам
         for i, brick in enumerate(self.bricks_group):
+            # Если было, то выбираем соответствующий набор спрайтов
             if brick.rect.collidepoint(event.pos):
                 self.brick_star.rect.x = brick.rect.x + 105
                 self.brick = i // 2
-
+        # Проверяем на нажатие по платформам
         for i, platform in enumerate(self.platforms_group):
+            # Если было, то выбираем соответствующую платформу
             if platform.rect.collidepoint(event.pos):
                 self.platform_star.rect.x = platform.rect.x + 155
                 self.platform = i // 2
 
     def save(self):
+        # Сохраняем информацию о выбраных спрайтах
         self.scene_data.update(
             {"brick_index": self.brick, "platform_index": self.platform})
+        # Выходим в меню
         self.switch_to_menu()
 
 

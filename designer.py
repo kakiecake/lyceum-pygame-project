@@ -18,16 +18,20 @@ class Designer(Scene):
 
     @event_handler(pygame.MOUSEBUTTONDOWN, button=1, use_event=True)
     def left_mouse_button_click(self, event):
+        # При нажатии на левую кнопку мыши ставим обычный кирпич
         self.button.handle_click(event)
         brick = Brick(event.pos, moving=False)
         self.create_brick_if_not_collide(brick, event.pos)
 
     @event_handler(pygame.MOUSEBUTTONDOWN, button=2, use_event=True)
     def middle_mouse_button_click(self, event):
+        # При нажатии на среднюю кнопку мыши ставим подвижный кирпич
         brick = Brick(event.pos, moving=True)
         self.create_brick_if_not_collide(brick, event.pos)
 
     def create_brick_if_not_collide(self, brick, pos):
+        # Если кирпич не выходит за игровое поле и
+        # не сталкивается с другими кирпичами, то ставим
         if not(pygame.sprite.spritecollideany(brick, self.bricks_group)) and \
                 pos[0] < 850 and \
                 pos[1] < 470:
@@ -35,12 +39,17 @@ class Designer(Scene):
 
     @event_handler(pygame.MOUSEBUTTONDOWN, button=3, use_event=True)
     def right_mouse_button_click(self, event):
+        # При нажатии на правую кнопку мыши удаляем кирпич
+        # на который наведена мышь
         for brick in self.bricks_group:
             if brick.rect.collidepoint(event.pos):
                 brick.kill()
 
     def save(self):
-        self.scene_data.update({"bricks": [brick.get_data() for brick in self.bricks_group]})
+        # Сохраняем список кирпичей
+        self.scene_data.update({"bricks": [brick.get_data()
+                                           for brick in self.bricks_group]})
+        # Выходим в меню
         self.switch_to_menu()
 
     def show(self):
