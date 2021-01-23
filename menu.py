@@ -12,15 +12,15 @@ class Menu(Scene):
                  go_to_customization=lambda: None):
 
         self.start_button = Button(
-            Rect(50, 200, 250, 100), go_to_level, text="Старт")
+            Rect(50, 120, 250, 100), go_to_level, text="Старт")
         self.leaderboard_button = Button(
-            Rect(350, 200, 250, 100), go_to_leaderboard, text="Лидеры")
+            Rect(350, 120, 250, 100), go_to_leaderboard, text="Лидеры")
         self.registration_button = Button(
-            Rect(650, 200, 250, 100), go_to_registration, text="Вход/Регистрация")
+            Rect(650, 120, 250, 100), go_to_registration, text="Вход/Регистрация")
         self.designer_button = Button(
-            Rect(350, 400, 250, 100), go_to_designer, text="Конструктор уровней")
+            Rect(180, 300, 280, 100), go_to_designer, text="Конструктор уровней")
         self.customization_button = Button(
-            Rect(650, 400, 250, 100), go_to_customization, text="Кастомизация")
+            Rect(530, 300, 250, 100), go_to_customization, text="Кастомизация")
 
     @event_handler(pygame.MOUSEBUTTONDOWN, use_event=True)
     def handle_click(self, event):

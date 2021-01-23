@@ -36,7 +36,8 @@ if __name__ == '__main__':
     designer = Designer(switch_to_menu=lambda: scene_manager.switch_to('menu'))
     register_scene = RegisterScene(
         user_storage, switch_to_menu=lambda: scene_manager.switch_to('menu'))
-    difficulty_scene = Difficulty(switch_to_menu=lambda: scene_manager.switch_to('board'))
+    difficulty_scene = Difficulty(
+        switch_to_menu=lambda: scene_manager.switch_to('board'))
     customization_scene = Customization(
         switch_to_menu=lambda: scene_manager.switch_to('menu'))
 

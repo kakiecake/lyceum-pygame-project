@@ -46,6 +46,7 @@ def event_handler(event_type: int, use_event=False, **event_data):
 
 
 def get_event_handlers(game_objects: List):
+    """Возвращает обработчики событий из списка объектов"""
     for obj in game_objects:
         obj._event_handlers: Dict[int,
                                   List[Tuple[Callable, EventMetadata]]] = {}
@@ -76,6 +77,7 @@ def validate_required_fields(event, event_data: dict) -> bool:
 
 
 def handle_events(scene):
+    """Обработка событий"""
     if '_event_handlers' not in scene.__dict__:
         return
     handlers = scene._event_handlers

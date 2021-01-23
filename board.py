@@ -114,6 +114,11 @@ class Board(Scene):
         # платформы
         self.platform.sprite.move(event.pos)
 
+    @event_handler(pygame.KEYDOWN, key=pygame.K_ESCAPE)
+    def on_escape_pressed(self):
+        pygame.mouse.set_visible(True)
+        self.switch_to_menu()
+
     @event_handler(pygame.KEYDOWN)
     def press_any_key_to_leave(self):
         # Выход при нажатии любой кнопки после окончания игры
