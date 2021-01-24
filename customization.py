@@ -45,13 +45,13 @@ class Customization(Scene):
             # Если было, то выбираем соответствующий набор спрайтов
             if brick.rect.collidepoint(event.pos):
                 self.brick_star.rect.x = brick.rect.x + 105
-                self.brick = i // 2
+                self.brick = i % 4
         # Проверяем на нажатие по платформам
         for i, platform in enumerate(self.platforms_group):
             # Если было, то выбираем соответствующую платформу
             if platform.rect.collidepoint(event.pos):
                 self.platform_star.rect.x = platform.rect.x + 155
-                self.platform = i // 2
+                self.platform = i % 4
 
     def save(self):
         # Сохраняем информацию о выбраных спрайтах
