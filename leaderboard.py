@@ -4,7 +4,7 @@ from leaderboard_storage import LeaderboardStorage
 
 
 class Leaderboard(Scene):
-    def __init__(self, leaderboard_storage: LeaderboardStorage):
+    def __init__(self, leaderboard_storage: LeaderboardStorage, switch_to_menu):
         self.font = pygame.font.Font(None, 40)
         self.storage = leaderboard_storage
         self.level = 'default'
@@ -14,6 +14,7 @@ class Leaderboard(Scene):
             text='Поменять отображение',
             on_click=self.switch_view)
         self.get_scores()
+        self.switch_to_menu = switch_to_menu
 
     @event_handler(pygame.MOUSEBUTTONDOWN, use_event=True)
     def handle_click(self, event):
@@ -50,3 +51,7 @@ class Leaderboard(Scene):
 
     def show(self):
         self.get_scores()
+
+    @event_handler(pygame.KEYDOWN, key=pygame.K_ESCAPE)
+    def on_escape_pressed(self):
+        self.switch_to_menu()
